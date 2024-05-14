@@ -1,0 +1,52 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Report</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/generador_qr_style.css' %}">
+</head>
+<body>
+    <div class="menu">
+        <ion-icon name="menu-outline"></ion-icon>
+        <ion-icon name="close-outline"></ion-icon>
+    </div>
+
+    <div class="barra-lateral">
+        <!-- Contenido del menú lateral -->
+    </div>
+
+    <div class="container">
+        <h1>Generate Report</h1>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for="csv_file">Select CSV file:</label>
+            <input type="file" id="csv_file" name="csv_file" accept=".csv" required><br><br>
+            <label for="pptx_template">Select PowerPoint template:</label>
+            <input type="file" id="pptx_template" name="pptx_template" accept=".pptx" required><br><br>
+            <input type="checkbox" id="no_process" name="no_process">
+            <label for="no_process">No Procesar Salidas</label><br><br>
+
+            <!-- Nuevos campos para ingresar información -->
+            <label for="nombre_evento">Nombre del evento:</label>
+            <input type="text" id="nombre_evento" name="nombre_evento" required><br><br>
+
+            <label for="pase_nombre">Nombre del pase:</label>
+            <input type="text" id="pase_nombre" name="pase_nombre" required><br><br>
+
+            <label for="fecha_evento">Fecha del evento:</label>
+            <input type="date" id="fecha_evento" name="fecha_evento" required><br><br>
+            <!-- Fin de los nuevos campos -->
+
+            <button type="submit">Generate Report</button>
+        </form>
+    </div>
+
+    <script src="{% static 'js/generador_qr_script.js' %}"></script>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <script src="{% static 'script.js' %}"></script>
+</body>
+</html>

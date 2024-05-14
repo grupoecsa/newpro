@@ -1,0 +1,79 @@
+{% load static %}
+
+{% block title %}{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        /* Estilos para centrar el formulario */
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-container {
+            width: 300px; /* Ancho del contenedor del formulario */
+            background-color: #f2f2f2; /* Color de fondo gris claro */
+            border-radius: 10px; /* Bordes redondeados */
+            padding: 20px; /* Espacio interno */
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Sombra */
+        }
+
+        /* Estilos para el formulario */
+        .container {
+            text-align: center; /* Alineación del texto en el centro */
+        }
+
+        .form-group {
+            margin-bottom: 20px; /* Espacio entre los elementos del formulario */
+        }
+
+        /* Estilos para el botón */
+        button[type="submit"] {
+            background-color: #007bff; /* Color de fondo del botón */
+            color: white; /* Color del texto del botón */
+            border: none; /* Sin borde */
+            border-radius: 5px; /* Bordes redondeados */
+            padding: 10px 20px; /* Espacio interno */
+            cursor: pointer; /* Cambiar el cursor al pasar por encima */
+            transition: background-color 0.3s; /* Transición suave del color de fondo */
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3; /* Color de fondo del botón al pasar el ratón por encima */
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="container">
+            <form method="post">
+                {% csrf_token %}
+                <h2>Login</h2>
+                {% if error %}
+                <p class="error">{{ error }}</p>
+                {% endif %}
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+{% endblock %}
