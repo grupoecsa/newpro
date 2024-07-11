@@ -12,6 +12,8 @@ import tempfile
 import matplotlib
 matplotlib.use('Agg')
 from django import forms
+import time
+
 
 class ReportForm(forms.Form):
     csv_file = forms.FileField(label='Select CSV file', required=True)
@@ -25,23 +27,37 @@ def power_report(request):
     return render(request, 'generate_report.html')
 
 def cargar_archivo_csv(csv_file, pptx_template, no_process, nombre_evento, pase_nombre, fecha_evento, request):
-    print("Procesando archivo CSV...")
-    csv_file = request.FILES.get('csv_file', None)
-    pptx_template = request.FILES.get('pptx_template', None)
-    print("Archivo CSV:", csv_file)
-    print("Plantilla PPTX:", pptx_template)
-    
-    if csv_file:
-        archivo_pptx = procesar_archivo_csv(csv_file, pptx_template, no_process, nombre_evento, pase_nombre, fecha_evento, request)
-        if isinstance(archivo_pptx, HttpResponse):
-            return archivo_pptx
-        else:
-            response = HttpResponse(archivo_pptx.getvalue(), content_type='application/vnd.openxmlformats-officedocument.presentationml.presentation')
-            response['Content-Disposition'] = 'attachment; filename="informe.pptx"'
-            archivo_pptx.close()
-            return response
-    else:
-        return HttpResponse("Error: No se proporcionó ningún archivo CSV.")
+    reintentos = 3
+    for intento in range(reintentos):
+        try:
+            print("Inicio del procesamiento del archivo CSV...")
+            csv_file = request.FILES.get('csv_file', None)
+            pptx_template = request.FILES.get('pptx_template', None)
+
+            if not csv_file:
+                print("No se proporcionó ningún archivo CSV.")
+                return HttpResponse("Error: No se proporcionó ningún archivo CSV.")
+
+            print(f"Archivo CSV: {csv_file.name}")
+            print(f"Plantilla PPTX: {pptx_template.name if pptx_template else 'No se proporcionó'}")
+
+            archivo_pptx = procesar_archivo_csv(csv_file, pptx_template, no_process, nombre_evento, pase_nombre, fecha_evento, request)
+
+            if isinstance(archivo_pptx, HttpResponse):
+                return archivo_pptx
+            else:
+                response = HttpResponse(archivo_pptx.getvalue(), content_type='application/vnd.openxmlformats-officedocument.presentationml.presentation')
+                response['Content-Disposition'] = 'attachment; filename="informe.pptx"'
+                archivo_pptx.close()
+                return response
+        except OSError as e:
+            print(f"Error de E/S al procesar el archivo CSV (intento {intento + 1} de {reintentos}): {e}")
+            time.sleep(1)  # Espera un segundo antes de reintentar
+        except Exception as e:
+            print(f"Error al procesar el archivo CSV: {e}")
+            return HttpResponse(f"Error al procesar el archivo CSV. Por favor, inténtalo de nuevo. Detalles del error: {e}")
+    return HttpResponse("Error al procesar el archivo CSV después de varios intentos. Por favor, inténtalo de nuevo más tarde.")
+
 
 def procesar_archivo_csv(csv_file, pptx_template, no_process, nombre_evento, pase_nombre, fecha_evento, request):
     print("Procesando archivo CSV...")
